@@ -636,6 +636,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TG8S2SXA4G;
 				INFOPLIST_KEY_CFBundleDisplayName = "Weather Text";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -652,6 +653,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TG8S2SXA4G;
 				INFOPLIST_KEY_CFBundleDisplayName = "Weather Text";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text";
 				PRODUCT_NAME = "$(TARGET_NAME)";
