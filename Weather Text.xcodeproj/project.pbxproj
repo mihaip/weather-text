@@ -12,11 +12,12 @@
 		911754962C1E54A7002F2AED /* Complication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911754952C1E54A7002F2AED /* Complication.swift */; };
 		911754982C1E54A8002F2AED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 911754972C1E54A8002F2AED /* Assets.xcassets */; };
 		9117549C2C1E54A8002F2AED /* ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9117548E2C1E54A7002F2AED /* ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		91555A732C1E438700C8300F /* Weather Text Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 91555A722C1E438700C8300F /* Weather Text Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		91555A732C1E438700C8300F /* Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 91555A722C1E438700C8300F /* Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		91555A782C1E438700C8300F /* WeatherTextWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */; };
 		91555A7A2C1E438700C8300F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91555A792C1E438700C8300F /* ContentView.swift */; };
 		91555A7C2C1E438800C8300F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7B2C1E438800C8300F /* Assets.xcassets */; };
 		91555A7F2C1E438800C8300F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7E2C1E438800C8300F /* Preview Assets.xcassets */; };
+		91CB45BD2C1E6577009994FA /* LocationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CB45BC2C1E6577009994FA /* LocationDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +55,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				91555A732C1E438700C8300F /* Weather Text Watch App.app in Embed Watch Content */,
+				91555A732C1E438700C8300F /* Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -68,12 +69,15 @@
 		911754952C1E54A7002F2AED /* Complication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complication.swift; sourceTree = "<group>"; };
 		911754972C1E54A8002F2AED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		911754992C1E54A8002F2AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		911754A12C1E5967002F2AED /* ComplicationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ComplicationExtension.entitlements; sourceTree = "<group>"; };
+		911754A22C1E5B5F002F2AED /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Watch App.entitlements"; sourceTree = "<group>"; };
 		91555A6C2C1E438700C8300F /* Weather Text.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Weather Text.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91555A722C1E438700C8300F /* Weather Text Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Weather Text Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		91555A722C1E438700C8300F /* Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherTextWatchApp.swift; sourceTree = "<group>"; };
 		91555A792C1E438700C8300F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		91555A7B2C1E438800C8300F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91555A7E2C1E438800C8300F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		91CB45BC2C1E6577009994FA /* LocationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,8 +112,9 @@
 		911754942C1E54A7002F2AED /* Complication */ = {
 			isa = PBXGroup;
 			children = (
-				911754952C1E54A7002F2AED /* Complication.swift */,
 				911754972C1E54A8002F2AED /* Assets.xcassets */,
+				911754952C1E54A7002F2AED /* Complication.swift */,
+				911754A12C1E5967002F2AED /* ComplicationExtension.entitlements */,
 				911754992C1E54A8002F2AED /* Info.plist */,
 			);
 			path = Complication;
@@ -129,7 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				91555A6C2C1E438700C8300F /* Weather Text.app */,
-				91555A722C1E438700C8300F /* Weather Text Watch App.app */,
+				91555A722C1E438700C8300F /* Watch App.app */,
 				9117548E2C1E54A7002F2AED /* ComplicationExtension.appex */,
 			);
 			name = Products;
@@ -138,10 +143,12 @@
 		91555A762C1E438700C8300F /* Weather Text */ = {
 			isa = PBXGroup;
 			children = (
-				91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */,
-				91555A792C1E438700C8300F /* ContentView.swift */,
 				91555A7B2C1E438800C8300F /* Assets.xcassets */,
+				91555A792C1E438700C8300F /* ContentView.swift */,
 				91555A7D2C1E438800C8300F /* Preview Content */,
+				911754A22C1E5B5F002F2AED /* Watch App.entitlements */,
+				91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */,
+				91CB45BC2C1E6577009994FA /* LocationDataManager.swift */,
 			);
 			path = "Weather Text";
 			sourceTree = "<group>";
@@ -191,9 +198,9 @@
 			productReference = 91555A6C2C1E438700C8300F /* Weather Text.app */;
 			productType = "com.apple.product-type.application.watchapp2-container";
 		};
-		91555A712C1E438700C8300F /* Weather Text Watch App */ = {
+		91555A712C1E438700C8300F /* Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91555A822C1E438800C8300F /* Build configuration list for PBXNativeTarget "Weather Text Watch App" */;
+			buildConfigurationList = 91555A822C1E438800C8300F /* Build configuration list for PBXNativeTarget "Watch App" */;
 			buildPhases = (
 				91555A6E2C1E438700C8300F /* Sources */,
 				91555A6F2C1E438700C8300F /* Frameworks */,
@@ -205,9 +212,9 @@
 			dependencies = (
 				9117549B2C1E54A8002F2AED /* PBXTargetDependency */,
 			);
-			name = "Weather Text Watch App";
+			name = "Watch App";
 			productName = "Weather Text Watch App";
-			productReference = 91555A722C1E438700C8300F /* Weather Text Watch App.app */;
+			productReference = 91555A722C1E438700C8300F /* Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -245,7 +252,7 @@
 			projectRoot = "";
 			targets = (
 				91555A6B2C1E438700C8300F /* Weather Text */,
-				91555A712C1E438700C8300F /* Weather Text Watch App */,
+				91555A712C1E438700C8300F /* Watch App */,
 				9117548D2C1E54A7002F2AED /* ComplicationExtension */,
 			);
 		};
@@ -292,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				91555A7A2C1E438700C8300F /* ContentView.swift in Sources */,
+				91CB45BD2C1E6577009994FA /* LocationDataManager.swift in Sources */,
 				91555A782C1E438700C8300F /* WeatherTextWatchApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,7 +314,7 @@
 		};
 		91555A752C1E438700C8300F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 91555A712C1E438700C8300F /* Weather Text Watch App */;
+			target = 91555A712C1E438700C8300F /* Watch App */;
 			targetProxy = 91555A742C1E438700C8300F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -317,6 +325,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = Complication/ComplicationExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TG8S2SXA4G;
@@ -324,6 +334,8 @@
 				INFOPLIST_FILE = Complication/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Complication;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show weather in the complication";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -331,8 +343,9 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text.watchkitapp.Complication";
+				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text.watchkitapp.ComplicationExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -347,6 +360,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = Complication/ComplicationExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TG8S2SXA4G;
@@ -354,6 +369,8 @@
 				INFOPLIST_FILE = Complication/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Complication;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show weather in the complication";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -361,8 +378,9 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text.watchkitapp.Complication";
+				PRODUCT_BUNDLE_IDENTIFIER = "info.persistent.Weather-Text.watchkitapp.ComplicationExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -493,6 +511,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Weather Text/Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Weather Text/Preview Content\"";
@@ -500,6 +519,11 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Weather Text";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show weather in the complication";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -524,6 +548,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Weather Text/Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Weather Text/Preview Content\"";
@@ -531,6 +556,11 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Weather Text";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationTemporaryUsageDescriptionDictionary = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Show weather in the complication";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show weather in the complication";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -604,7 +634,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		91555A822C1E438800C8300F /* Build configuration list for PBXNativeTarget "Weather Text Watch App" */ = {
+		91555A822C1E438800C8300F /* Build configuration list for PBXNativeTarget "Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91555A832C1E438800C8300F /* Debug */,
