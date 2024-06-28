@@ -59,45 +59,122 @@ private class LocationFetcher : NSObject, CLLocationManagerDelegate {
 struct Provider: TimelineProvider {
     private let locationFetcher = LocationFetcher()
 
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+    func placeholder(in context: Context) -> WeatherEntry {
+        WeatherEntry(date: .now, data: .success(goodWeatherData))
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> ()) {
         locationFetcher.fetch { result in
             Task {
-                var output: String
+                let now = Date()
                 do {
                     let location = try result.get()
-                    output = try await WeatherService.shared.weather(for: location).currentWeather.temperature.debugDescription
+                    let weather = try await WeatherService.shared.weather(for: location)
+                    let current = weather.currentWeather
+                    let today = weather.dailyForecast[0]
+
+                    var sunEvent : SunEvent?
+                    for day in weather.dailyForecast {
+                        if let sunrise = day.sun.sunrise, sunrise > now {
+                            sunEvent = .sunrise(sunrise)
+                            break
+                        }
+                        if let sunset = day.sun.sunset, sunset > now {
+                            sunEvent = .sunset(sunset)
+                            break
+                        }
+                    }
+
+                    let data = WeatherData(
+                        currentTemperature: current.temperature,
+                        currentSymbol: current.symbolName,
+                        currentCondition: current.condition,
+                        highTemperature: today.highTemperature,
+                        lowTemperature: today.lowTemperature,
+                        sunEvent: sunEvent
+                    )
+                    completion(WeatherEntry(date: now, data: .success(data)))
                 } catch {
-                    output = "Error: \(error.localizedDescription)"
+                    completion(WeatherEntry(date: now, data: .failure(error)))
                 }
-                completion(SimpleEntry(date: Date(), emoji: output))
             }
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         getSnapshot(in: context) { entry in
-            let timeline = Timeline(entries: [entry], policy: .never)
+            let refreshDate = entry.date.addingTimeInterval(3600)
+            let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
             completion(timeline)
         }
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+
+struct WeatherEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    let data: Result<WeatherData, Error>
+}
+
+struct WeatherData {
+    let currentTemperature: Measurement<UnitTemperature>
+    let currentSymbol: String
+    let currentCondition: WeatherCondition
+
+    let highTemperature: Measurement<UnitTemperature>
+    let lowTemperature: Measurement<UnitTemperature>
+
+    let sunEvent: SunEvent?
+}
+
+enum SunEvent {
+    case sunrise(Date)
+    case sunset(Date)
 }
 
 struct ComplicationEntryView : View {
     var entry: Provider.Entry
 
+    private let temperatureFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
+        width: .narrow,
+        hidesScaleName: true,
+        numberFormatStyle: FloatingPointFormatStyle<Double>().precision(.fractionLength(0))
+    )
+
     var body: some View {
-        VStack {
-            Text(entry.emoji)
-                .font(.caption)
+        VStack(alignment: .leading) {
+            switch entry.data {
+            case .success(let weather):
+                HStack {
+                    Image(systemName: weather.currentSymbol)
+                    Text(weather.currentTemperature, format: temperatureFormat)
+                    Text(weather.currentCondition.description)
+                }
+                .font(.headline)
+                HStack {
+                    Text("High:")
+                    Text(weather.highTemperature, format: temperatureFormat)
+                    Text("Low:")
+                    Text(weather.lowTemperature, format: temperatureFormat)
+                }
+                .font(.subheadline)
+                if let sunEvent = weather.sunEvent {
+                    HStack {
+                        switch sunEvent {
+                        case .sunrise(let date):
+                            Text("Sunrise:")
+                            Text(date, style: .time)
+                        case .sunset(let date):
+                            Text("Sunset:")
+                            Text(date, style: .time)
+                        }
+                    }.foregroundStyle(.secondary)
+                }
+            case .failure(let error):
+                Text(error.localizedDescription)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
             HStack(spacing: 0) {
                 Spacer()
                 Text("@")
@@ -129,6 +206,25 @@ struct Complication: Widget {
 #Preview(as: .accessoryRectangular) {
     Complication()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    WeatherEntry(date: .now, data: .success(goodWeatherData))
+    WeatherEntry(date: .now, data: .success(badWeatherData))
+    WeatherEntry(date: .now, data: .failure(NSError(domain: "info.persistent.WeatherText", code: 127)))
 }
+
+let goodWeatherData = WeatherData(
+    currentTemperature: Measurement(value: 62.9, unit: UnitTemperature.fahrenheit),
+    currentSymbol: "cloud.sun",
+    currentCondition: .partlyCloudy,
+    highTemperature: Measurement(value: 78.6, unit: UnitTemperature.fahrenheit),
+    lowTemperature: Measurement(value: 48.2, unit: UnitTemperature.fahrenheit),
+    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!)
+)
+
+let badWeatherData = WeatherData(
+    currentTemperature: Measurement(value: 20.7, unit: UnitTemperature.fahrenheit),
+    currentSymbol: "wind.snow",
+    currentCondition: .blizzard,
+    highTemperature: Measurement(value: 30.7, unit: UnitTemperature.fahrenheit),
+    lowTemperature: Measurement(value: 12.2, unit: UnitTemperature.fahrenheit),
+    sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!)
+)
