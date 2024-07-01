@@ -134,6 +134,8 @@ enum SunEvent {
 
 struct ComplicationEntryView : View {
     var entry: Provider.Entry
+    @ScaledMetric var mediumSpacing = 6
+    @ScaledMetric var smallSpacing = 2
 
     private let temperatureFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
         width: .narrow,
@@ -145,30 +147,42 @@ struct ComplicationEntryView : View {
         VStack(alignment: .leading) {
             switch entry.data {
             case .success(let weather):
-                HStack {
+                HStack(spacing: mediumSpacing) {
                     Image(systemName: weather.currentSymbol)
                     Text(weather.currentTemperature, format: temperatureFormat)
                     Text(weather.currentCondition.description)
                 }
                 .font(.headline)
-                HStack {
-                    Text("High:")
-                    Text(weather.highTemperature, format: temperatureFormat)
+                .scaledToFill()
+                .minimumScaleFactor(0.8)
+                HStack(spacing: 0) {
                     Text("Low:")
+                        .padding([.trailing], smallSpacing)
                     Text(weather.lowTemperature, format: temperatureFormat)
+                        .padding([.trailing], mediumSpacing)
+                    Text("High:")
+                        .padding([.trailing], smallSpacing)
+                    Text(weather.highTemperature, format: temperatureFormat)
                 }
                 .font(.subheadline)
+                .scaledToFill()
+                .minimumScaleFactor(0.8)
                 if let sunEvent = weather.sunEvent {
-                    HStack {
+                    HStack(spacing: 0) {
                         switch sunEvent {
                         case .sunrise(let date):
                             Text("Sunrise:")
+                                .padding([.trailing], smallSpacing)
                             Text(date, style: .time)
                         case .sunset(let date):
                             Text("Sunset:")
+                                .padding([.trailing], smallSpacing)
                             Text(date, style: .time)
                         }
-                    }.foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(.secondary)
+                    .scaledToFill()
+                    .minimumScaleFactor(0.8)
                 }
             case .failure(let error):
                 Text(error.localizedDescription)
@@ -207,6 +221,7 @@ struct Complication: Widget {
     Complication()
 } timeline: {
     WeatherEntry(date: .now, data: .success(goodWeatherData))
+    WeatherEntry(date: .now, data: .success(mediumWeatherData))
     WeatherEntry(date: .now, data: .success(badWeatherData))
     WeatherEntry(date: .now, data: .failure(NSError(domain: "info.persistent.WeatherText", code: 127)))
 }
@@ -217,6 +232,15 @@ let goodWeatherData = WeatherData(
     currentCondition: .partlyCloudy,
     highTemperature: Measurement(value: 78.6, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 48.2, unit: UnitTemperature.fahrenheit),
+    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!)
+)
+
+let mediumWeatherData = WeatherData(
+    currentTemperature: Measurement(value: 52.9, unit: UnitTemperature.fahrenheit),
+    currentSymbol: "cloud.sun",
+    currentCondition: .mostlyCloudy,
+    highTemperature: Measurement(value: 55.6, unit: UnitTemperature.fahrenheit),
+    lowTemperature: Measurement(value: 41.2, unit: UnitTemperature.fahrenheit),
     sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!)
 )
 
