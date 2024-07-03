@@ -69,12 +69,11 @@ struct Provider: TimelineProvider {
                 let now = Date()
                 do {
                     let location = try result.get()
-                    let weather = try await WeatherService.shared.weather(for: location)
-                    let current = weather.currentWeather
-                    let today = weather.dailyForecast[0]
+                    let (current, daily, alerts) = try await WeatherService.shared.weather(for: location, including: .current, .daily, .alerts)
+                    let today = daily[0]
 
                     var sunEvent : SunEvent?
-                    for day in weather.dailyForecast {
+                    for day in daily {
                         if let sunrise = day.sun.sunrise, sunrise > now {
                             sunEvent = .sunrise(sunrise)
                             break
@@ -85,13 +84,34 @@ struct Provider: TimelineProvider {
                         }
                     }
 
+                    var alert: WeatherAlertData?
+                    if let alerts {
+                        for a in alerts {
+                            switch a.severity {
+                            case .minor, .moderate:
+                                // Ignored if not that important
+                                break
+                            case .severe:
+                                alert = WeatherAlertData(severity: .severe, summary: a.summary)
+                            case .extreme:
+                                alert = WeatherAlertData(severity: .extreme, summary: a.summary)
+                            case .unknown:
+                                alert = WeatherAlertData(severity: .unknown, summary: a.summary)
+                            @unknown default:
+                                alert = WeatherAlertData(severity: .unknown, summary: a.summary)
+                            }
+                        }
+                    }
+
+
                     let data = WeatherData(
                         currentTemperature: current.temperature,
                         currentSymbol: current.symbolName,
                         currentCondition: current.condition,
                         highTemperature: today.highTemperature,
                         lowTemperature: today.lowTemperature,
-                        sunEvent: sunEvent
+                        sunEvent: sunEvent,
+                        alert: alert
                     )
                     completion(WeatherEntry(date: now, data: .success(data)))
                 } catch {
@@ -103,7 +123,14 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         getSnapshot(in: context) { entry in
-            let refreshDate = entry.date.addingTimeInterval(3600)
+            let refreshInterval: TimeInterval
+            switch entry.data {
+            case .success(_):
+                refreshInterval = 3600
+            case .failure(_):
+                refreshInterval = 300
+            }
+            let refreshDate = entry.date.addingTimeInterval(refreshInterval)
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
             completion(timeline)
         }
@@ -125,6 +152,40 @@ struct WeatherData {
     let lowTemperature: Measurement<UnitTemperature>
 
     let sunEvent: SunEvent?
+    let alert: WeatherAlertData?
+}
+
+struct WeatherAlertData {
+    let severity: WeatherAlertSeverity
+    let summary: String
+}
+
+enum WeatherAlertSeverity {
+    case severe
+    case extreme
+    case unknown
+
+    var symbol: String {
+        switch self {
+        case .severe:
+            return "exclamationmark.circle.fill"
+        case .extreme:
+            return "exclamationmark.triangle.fill"
+        case .unknown:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .severe:
+            return Color.yellow
+        case .extreme:
+            return Color.red
+        case .unknown:
+            return Color.purple
+        }
+    }
 }
 
 enum SunEvent {
@@ -167,7 +228,14 @@ struct ComplicationEntryView : View {
                 .font(.subheadline)
                 .scaledToFill()
                 .minimumScaleFactor(0.8)
-                if let sunEvent = weather.sunEvent {
+                if let alert = weather.alert {
+                    HStack(spacing: mediumSpacing) {
+                        Image(systemName: alert.severity.symbol)
+                        Text(alert.summary)
+                    }
+                    .font(.callout)
+                    .foregroundStyle(alert.severity.color)
+                } else if let sunEvent = weather.sunEvent {
                     HStack(spacing: 0) {
                         switch sunEvent {
                         case .sunrise(let date):
@@ -185,9 +253,16 @@ struct ComplicationEntryView : View {
                     .minimumScaleFactor(0.8)
                 }
             case .failure(let error):
+                HStack(spacing: mediumSpacing) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                    Text("Unavailable")
+                }
+                    .foregroundStyle(.red)
+                    .font(.headline)
+                    .scaledToFill()
+                    .minimumScaleFactor(0.8)
                 Text(error.localizedDescription)
                     .font(.caption)
-                    .foregroundStyle(.red)
             }
             HStack(spacing: 0) {
                 Spacer()
@@ -232,7 +307,8 @@ let goodWeatherData = WeatherData(
     currentCondition: .partlyCloudy,
     highTemperature: Measurement(value: 78.6, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 48.2, unit: UnitTemperature.fahrenheit),
-    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!)
+    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!),
+    alert: nil
 )
 
 let mediumWeatherData = WeatherData(
@@ -241,7 +317,8 @@ let mediumWeatherData = WeatherData(
     currentCondition: .mostlyCloudy,
     highTemperature: Measurement(value: 55.6, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 41.2, unit: UnitTemperature.fahrenheit),
-    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!)
+    sunEvent: .sunrise(Calendar.current.date(bySetting: .hour, value: 7, of: Date())!),
+    alert: nil
 )
 
 let badWeatherData = WeatherData(
@@ -250,5 +327,6 @@ let badWeatherData = WeatherData(
     currentCondition: .blizzard,
     highTemperature: Measurement(value: 30.7, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 12.2, unit: UnitTemperature.fahrenheit),
-    sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!)
+    sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!),
+    alert: WeatherAlertData(severity: .extreme, summary: "Thunderbolt and lightning, very very frightening")
 )
