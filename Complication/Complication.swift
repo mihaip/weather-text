@@ -15,7 +15,7 @@ struct Provider: TimelineProvider {
                 let now = Date()
                 do {
                     let location = try result.get()
-                    let data = try await WeatherData.create(location: location, now: now)
+                    let data = try await WeatherData.load(location: location, now: now)
                     completion(WeatherEntry(date: now, data: .success(data)))
                 } catch {
                     completion(WeatherEntry(date: now, data: .failure(error)))

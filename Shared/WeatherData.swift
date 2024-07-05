@@ -14,7 +14,7 @@ struct WeatherData {
     let sunEvent: SunEvent?
     let alert: WeatherAlertData?
 
-    static func create(location: CLLocation, now: Date) async throws -> WeatherData {
+    static func load(location: CLLocation, now: Date) async throws -> WeatherData {
         let (current, daily, alerts) = try await WeatherService.shared.weather(for: location, including: .current, .daily, .alerts)
         let today = daily[0]
 
