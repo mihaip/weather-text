@@ -13,17 +13,23 @@ struct ContentView: View {
                         WeatherPreviewView(location: location, now: Date())
                     }
                 case .notDetermined:
-                    Button("Request Location") {
-                        locationDataManager.requestAuthorization()
+                    ScrollView {
+                        Text("Weather Text shows a brief textual summary of your current location's weather in a widget or complication.")
+                            .padding(.bottom, 8)
+                        Button("Current Location", systemImage: "location.fill") {
+                            locationDataManager.requestAuthorization()
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
                 case .waiting:
                     ProgressView()
                 case .restricted:
-                    Text("Restricted")
+                    Text("Location information is restricted, please check with your device adminstrator.")
                 case .denied:
-                    Text("Denied")
+                    Text("Location access was not granted, please check your device settings.")
                 case .error(let error):
-                    Text("Error: \(error.localizedDescription)")
+                    Text("Encountered an error getting location information.")
+                    Text(error.localizedDescription)
                 }
             }
             .navigationTitle {
