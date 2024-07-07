@@ -11,28 +11,37 @@ struct WeatherPreviewView: View {
       case failed(Error)
     }
     @State private var state = WeatherState.loading
+    @ObservedObject var prefs = Prefs.shared
 
     var body: some View {
-        Group {
-            switch state {
-            case .loading:
-                ProgressView()
-            case .loaded(let weather):
-                VStack(alignment: .leading) {
-                    Text("Weather widget and complication ready to be added.")
-                        .padding(.bottom, 4)
-                    Text("Preview")
-                        .foregroundStyle(.secondary)
-                    WeatherView(weather: weather)
-                        .padding(8)
-                        .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.secondary, lineWidth: 1)
-                            )
+        VStack(alignment: .leading) {
+            Text("Weather widget and complication ready to be added.")
+                .padding(.bottom, 4)
+            Text("Preview")
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading) {
+                switch state {
+                case .loading:
+                    ProgressView()
+                        .padding(.vertical, 12)
+                case .loaded(let weather):
+                        WeatherView(weather: weather)
+                        if Prefs.shared.showFooter {
+                            WeatherFooterView(date: now, locationName: weather.locationName)
+                        }
+                case .failed(let error):
+                    WeatherErrorView(error: error)
                 }
-            case .failed(let error):
-                WeatherErrorView(error: error)
             }
+                .padding(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(.secondary, lineWidth: 1)
+                )
+            Text("Settings")
+                .foregroundStyle(.secondary)
+                .padding(.top, 8)
+            Toggle("Show footer", isOn: $prefs.showFooter)
         }
         .task {
             do {
@@ -46,5 +55,7 @@ struct WeatherPreviewView: View {
 }
 
 #Preview {
-    WeatherPreviewView(location: CLLocation(latitude: 37.3230, longitude: 122.0322), now: Date())
+    ScrollView {
+        WeatherPreviewView(location: previewLocation, now: Date())
+    }
 }

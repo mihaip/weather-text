@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WeatherErrorView: View {
     var error: Error
-    @ScaledMetric var spacing = 6
+    @ScaledMetric private var spacing = 6
 
     var body: some View {
         HStack(spacing: spacing) {

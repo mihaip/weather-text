@@ -54,17 +54,14 @@ struct ComplicationEntryView : View {
             switch entry.data {
             case .success(let weather):
                 WeatherView(weather: weather)
+                if Prefs.shared.showFooter {
+                    WeatherFooterView(date: entry.date, locationName: weather.locationName)
+                }
             case .failure(let error):
                 WeatherErrorView(error: error)
-            }
-            HStack(spacing: 0) {
-                Spacer()
-                Text("@")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(entry.date, style: .time)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if Prefs.shared.showFooter {
+                    WeatherFooterView(date: entry.date)
+                }
             }
         }
     }
@@ -80,7 +77,7 @@ struct Complication: Widget {
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Weather Summary")
-        .description("One-sentence summary of today's weather.")
+        .description("Textual summary of today's weather.")
         .supportedFamilies([.accessoryRectangular])
     }
 }

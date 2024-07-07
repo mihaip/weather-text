@@ -4,6 +4,8 @@ import SwiftUI
 import WeatherKit
 
 struct WeatherData {
+    let location: CLLocation
+    let locationName: String?
     let currentTemperature: Measurement<UnitTemperature>
     let currentSymbol: String
     let currentCondition: WeatherCondition
@@ -49,8 +51,30 @@ struct WeatherData {
             }
         }
 
+        var locationName: String?
+        let geocoder = CLGeocoder()
+        do {
+            let result = try await geocoder.reverseGeocodeLocation(location)
+            if let placemark = result.first {
+                locationName = placemark.name
+                if placemark.isoCountryCode == "US" {
+                    if let city = placemark.locality, let state = placemark.administrativeArea {
+                        locationName = "\(city), \(state)"
+                    }
+                } else {
+                    if let city = placemark.locality, let country = placemark.country {
+                        locationName = "\(city), \(country)"
+                    }
+                }
+            }
+        } catch {
+            // Geolocation is not load bearing
+            print("Cannot geocode location: \(error)")
+        }
 
         return WeatherData(
+            location: location,
+            locationName: locationName,
             currentTemperature: current.temperature,
             currentSymbol: current.symbolName,
             currentCondition: current.condition,
@@ -102,6 +126,8 @@ enum SunEvent {
 }
 
 let goodWeatherData = WeatherData(
+    location: previewLocation,
+    locationName: previewLocationName,
     currentTemperature: Measurement(value: 62.9, unit: UnitTemperature.fahrenheit),
     currentSymbol: "cloud.sun",
     currentCondition: .partlyCloudy,
@@ -112,6 +138,8 @@ let goodWeatherData = WeatherData(
 )
 
 let mediumWeatherData = WeatherData(
+    location: previewLocation,
+    locationName: previewLocationName,
     currentTemperature: Measurement(value: 52.9, unit: UnitTemperature.fahrenheit),
     currentSymbol: "cloud.sun",
     currentCondition: .mostlyCloudy,
@@ -122,6 +150,8 @@ let mediumWeatherData = WeatherData(
 )
 
 let badWeatherData = WeatherData(
+    location: previewLocation,
+    locationName: previewLocationName,
     currentTemperature: Measurement(value: 20.7, unit: UnitTemperature.fahrenheit),
     currentSymbol: "wind.snow",
     currentCondition: .blizzard,
@@ -130,3 +160,6 @@ let badWeatherData = WeatherData(
     sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!),
     alert: WeatherAlertData(severity: .extreme, summary: "Thunderbolt and lightning, very very frightening")
 )
+
+let previewLocation = CLLocation(latitude: 37.3230, longitude: 122.0322)
+let previewLocationName = "Cupertino, CA"

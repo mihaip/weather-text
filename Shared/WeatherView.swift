@@ -2,8 +2,8 @@ import SwiftUI
 
 struct WeatherView : View {
     var weather: WeatherData
-    @ScaledMetric var mediumSpacing = 6
-    @ScaledMetric var smallSpacing = 2
+    @ScaledMetric private var mediumSpacing = 6
+    @ScaledMetric private var smallSpacing = 2
 
     private let temperatureFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
         width: .narrow,
@@ -58,5 +58,10 @@ struct WeatherView : View {
                 .minimumScaleFactor(0.8)
             }
         }
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity,
+            alignment: .topLeading
+        )
     }
 }
