@@ -4,17 +4,38 @@ import WidgetKit
 class Prefs: ObservableObject {
     static let shared: Prefs = {
         let instance = Prefs()
-        Prefs.suite?.register(defaults: [
+        suite?.register(defaults: [
             Prefs.showFooterKey: true,
         ])
         return instance
     }()
 
-    private static let suite = UserDefaults(suiteName:"group.info.persistent.Weather-Text")
-
-    @Published var showFooter: Bool = Prefs.suite?.bool(forKey: Prefs.showFooterKey) ?? true {
-        didSet { Prefs.suite?.set(self.showFooter, forKey: Prefs.showFooterKey) }
+    @suiteUserDefault(Prefs.showFooterKey, defaultValue: false) var showFooter: Bool {
+        willSet { objectWillChange.send() }
     }
     private static let showFooterKey = "showFooter"
+}
+
+fileprivate let suite = UserDefaults(suiteName:"group.info.persistent.Weather-Text")
+
+@propertyWrapper
+struct suiteUserDefault<T> {
+    let key: String
+    let defaultValue: T
+
+    init(_ key: String, defaultValue: T) {
+        self.key = key
+        self.defaultValue = defaultValue
+    }
+
+    var wrappedValue: T {
+        get {
+            suite?.object(forKey: key) as? T ?? defaultValue
+        }
+        set {
+            suite?.set(newValue, forKey: key)
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
 }
 
