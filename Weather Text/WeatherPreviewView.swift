@@ -43,7 +43,7 @@ struct WeatherPreviewView: View {
                 .padding(.top, 8)
             Toggle("Show footer", isOn: $prefs.showFooter)
         }
-        .task {
+        .task(id: now) {
             do {
                 let weatherData = try await WeatherData.load(location: location, now: now)
                 state = .loaded(weatherData)

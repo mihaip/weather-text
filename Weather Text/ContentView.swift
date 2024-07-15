@@ -1,8 +1,11 @@
+import AuthenticationServices
 import WeatherKit
 import SwiftUI
 
 struct ContentView: View {
     @StateObject var locationDataManager = LocationDataManager()
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var now = Date()
 
     var body: some View {
         NavigationView {
@@ -10,14 +13,38 @@ struct ContentView: View {
                 switch locationDataManager.state {
                 case .available(let location):
                     ScrollView {
-                        WeatherPreviewView(location: location, now: Date())
+                        WeatherPreviewView(location: location, now: now)
                     }
+                        // Refresh the preview date so that we don't display
+                        // overly stale data when resuming the app.
+                        .onChange(of: scenePhase) {
+                            if scenePhase == .active {
+                                now = Date()
+                            }
+                        }
                 case .notDetermined:
                     ScrollView {
-                        Text("Weather Text shows a brief textual summary of your current location's weather in a widget or complication.")
-                            .padding(.bottom, 8)
-                        Button("Current Location", systemImage: "location.fill") {
-                            locationDataManager.requestAuthorization()
+                        VStack(spacing: 8) {
+                            Text("Weather Text shows a brief textual summary of your current location's weather in a widget or complication.")
+                            Button("Use Location", systemImage: "location.fill") {
+                                locationDataManager.requestAuthorization()
+                            }
+                                .buttonStyle(BorderedButtonStyle(tint: .teal))
+                            Button("Learn More") {
+                                let url = URL(string: "https://github.com/mihaip/weather-text#weather-text")!
+                                // There's no SFSafariViewController on watchOS, but a
+                                // ASWebAuthenticationSession (ephemeral so that there's
+                                // no prompt) is a reasonable approximation.
+                                let session = ASWebAuthenticationSession(
+                                   url: url,
+                                   callbackURLScheme: nil
+                               ) { _, _ in
+
+                               }
+                               session.prefersEphemeralWebBrowserSession = true
+                               session.start()
+                            }
+                                .buttonStyle(.plain)
                         }
                         .buttonStyle(.borderedProminent)
                     }

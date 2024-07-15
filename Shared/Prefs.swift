@@ -5,7 +5,7 @@ class Prefs: ObservableObject {
     static let shared: Prefs = {
         let instance = Prefs()
         suite?.register(defaults: [
-            Prefs.showFooterKey: true,
+            Prefs.showFooterKey: false,
         ])
         return instance
     }()
