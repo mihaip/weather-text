@@ -1,9 +1,16 @@
 import SwiftUI
 import WidgetKit
 import WeatherKit
+import os
+
+class EntryCache {
+    var previousEntry: WeatherEntry?
+}
 
 struct Provider: TimelineProvider {
     private let locationFetcher = LocationFetcher()
+    private let entryCache = EntryCache()
+    private let logger = Logger()
 
     func placeholder(in context: Context) -> WeatherEntry {
         WeatherEntry(date: .now, data: .success(goodWeatherData))
@@ -20,8 +27,17 @@ struct Provider: TimelineProvider {
                 do {
                     let location = try result.get()
                     let data = try await WeatherData.load(location: location, now: now)
-                    completion(WeatherEntry(date: now, data: .success(data)))
+                    let newEntry = WeatherEntry(date: now, data: .success(data))
+                    entryCache.previousEntry = newEntry
+                    completion(newEntry)
                 } catch {
+                    if let previousEntry = entryCache.previousEntry {
+                        if now.timeIntervalSince(previousEntry.date) < 24 * 3600 {
+                            logger.warning("Got error \(error) when generating timeline entry, using previous value from \(previousEntry.date)")
+                            completion(previousEntry)
+                            return
+                        }
+                    }
                     completion(WeatherEntry(date: now, data: .failure(error)))
                 }
             }
