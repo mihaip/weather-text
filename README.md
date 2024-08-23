@@ -1,6 +1,6 @@
 # Weather Text
 
-Weather Text is a watchOS app that displays a textual summary of the day's weather in a complication or widget. It's meant to be a replacement for the Dark Sky's large watchOS complication (which stopped working in [late 2022](https://web.archive.org/web/20240521195120/https://blog.darksky.net/dark-sky-has-a-new-home/)).
+Weather Text is a watchOS app that displays a textual summary of the day's weather in a complication or widget. It's meant to be a replacement for the Dark Sky's large watchOS complication (which stopped working in [late 2022](https://web.archive.org/web/20240521195120/https://blog.darksky.net/dark-sky-has-a-new-home/)). For information, see [this blog post](https://blog.persistent.info/2024/08/weather-text.html).
 
 | ![Complication](./Assets/complication.png) | ![App](./Assets/app.png) |
 | - | - |
