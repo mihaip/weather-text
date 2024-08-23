@@ -15,10 +15,11 @@ struct ContentView: View {
                     ScrollView {
                         WeatherPreviewView(location: location, now: now)
                     }
-                        // Refresh the preview date so that we don't display
-                        // overly stale data when resuming the app.
+                        // Refresh the preview date and location so that we
+                        // don't display overly stale data when resuming the app.
                         .onChange(of: scenePhase) {
                             if scenePhase == .active {
+                                locationDataManager.refreshIfNeeded()
                                 now = Date()
                             }
                         }

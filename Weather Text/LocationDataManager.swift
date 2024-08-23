@@ -14,6 +14,7 @@ class LocationDataManager : NSObject, ObservableObject, CLLocationManagerDelegat
     @Published var state: LocationState
 
     private var locationManager = CLLocationManager()
+    private var lastLocationUpdate = Date()
 
     override init() {
         // locationManagerDidChangeAuthorization will be called when the location
@@ -43,8 +44,15 @@ class LocationDataManager : NSObject, ObservableObject, CLLocationManagerDelegat
         locationManager.requestAlwaysAuthorization()
     }
 
+    func refreshIfNeeded() {
+        if Date.now.timeIntervalSince(lastLocationUpdate) > 60 * 60 {
+            locationManager.requestLocation()
+        }
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         state = .available(locations.last!)
+        lastLocationUpdate = Date.now
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
