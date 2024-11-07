@@ -35,6 +35,10 @@ struct WeatherData {
         var alert: WeatherAlertData?
         if let alerts {
             for a in alerts {
+                // Happens too often, not actionable.
+                if a.summary == "Red Flag Warning" {
+                    continue
+                }
                 switch a.severity {
                 case .minor, .moderate:
                     // Ignored if not that important
