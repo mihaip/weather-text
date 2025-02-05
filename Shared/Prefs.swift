@@ -14,6 +14,19 @@ class Prefs: ObservableObject {
         willSet { objectWillChange.send() }
     }
     private static let showFooterKey = "showFooter"
+
+    @suiteUserDefault(Prefs.ignoredAlertKey, defaultValue: nil) var ignoredAlertURL: String? {
+        willSet { objectWillChange.send() }
+    }
+    private static let ignoredAlertKey = "ignoredAlert"
+
+    func shouldShow(alert: WeatherAlertData) -> Bool {
+        return ignoredAlertURL == nil || alert.detailsURL?.absoluteString != ignoredAlertURL
+    }
+
+    func ignore(alert: WeatherAlertData) {
+        ignoredAlertURL = alert.detailsURL?.absoluteString
+    }
 }
 
 fileprivate let suite = UserDefaults(suiteName:"group.info.persistent.Weather-Text")

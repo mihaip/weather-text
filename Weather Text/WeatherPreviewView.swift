@@ -42,6 +42,15 @@ struct WeatherPreviewView: View {
                 .foregroundStyle(.secondary)
                 .padding(.top, 8)
             Toggle("Show footer", isOn: $prefs.showFooter)
+            if case let .loaded(weather) = state {
+                if let alert = weather.alert {
+                    Button("Dismiss Alert") {
+                        Prefs.shared.ignore(alert: alert)
+                    }
+                    .padding(.top, 8)
+                    .buttonStyle(BorderedButtonStyle())
+                }
+            }
         }
         .task(id: now) {
             do {

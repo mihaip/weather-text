@@ -35,23 +35,20 @@ struct WeatherData {
         var alert: WeatherAlertData?
         if let alerts {
             for a in alerts {
-                // Happens too often, not actionable.
-                if a.summary == "Red Flag Warning" {
-                    continue
-                }
+                let severity: WeatherAlertSeverity
                 switch a.severity {
                 case .minor, .moderate:
-                    // Ignored if not that important
-                    break
+                    continue // Ignored if not that important
                 case .severe:
-                    alert = WeatherAlertData(severity: .severe, summary: a.summary)
+                    severity = .severe
                 case .extreme:
-                    alert = WeatherAlertData(severity: .extreme, summary: a.summary)
+                    severity = .extreme
                 case .unknown:
-                    alert = WeatherAlertData(severity: .unknown, summary: a.summary)
+                    severity = .unknown
                 @unknown default:
-                    alert = WeatherAlertData(severity: .unknown, summary: a.summary)
+                    severity = .unknown
                 }
+                alert = WeatherAlertData(detailsURL: a.detailsURL, severity: severity, summary: a.summary)
             }
         }
 
@@ -92,6 +89,7 @@ struct WeatherData {
 }
 
 struct WeatherAlertData {
+    let detailsURL: URL?
     let severity: WeatherAlertSeverity
     let summary: String
 }
@@ -162,7 +160,7 @@ let badWeatherData = WeatherData(
     highTemperature: Measurement(value: 30.7, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 12.2, unit: UnitTemperature.fahrenheit),
     sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!),
-    alert: WeatherAlertData(severity: .extreme, summary: "Thunderbolt and lightning, very very frightening")
+    alert: WeatherAlertData(detailsURL: URL(string: "https://galileo.com")!, severity: .extreme, summary: "Thunderbolt and lightning, very very frightening")
 )
 
 let previewLocation = CLLocation(latitude: 37.3230, longitude: 122.0322)

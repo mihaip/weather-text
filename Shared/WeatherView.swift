@@ -33,7 +33,7 @@ struct WeatherView : View {
             .font(.subheadline)
             .scaledToFill()
             .minimumScaleFactor(0.8)
-            if let alert = weather.alert {
+            if let alert = weather.alert, Prefs.shared.shouldShow(alert: alert) {
                 HStack(spacing: mediumSpacing) {
                     Image(systemName: alert.severity.symbol)
                     Text(alert.summary)
