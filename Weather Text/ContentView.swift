@@ -13,16 +13,17 @@ struct ContentView: View {
                 switch locationDataManager.state {
                 case .available(let location):
                     ScrollView {
-                        WeatherPreviewView(location: location, now: now)
-                    }
-                        // Refresh the preview date and location so that we
-                        // don't display overly stale data when resuming the app.
-                        .onChange(of: scenePhase) {
-                            if scenePhase == .active {
-                                locationDataManager.refreshIfNeeded()
-                                now = Date()
+                        VStack {
+                            WeatherPreviewView(location: location, now: now)
+                            if let error = locationDataManager.refreshError {
+                                RefreshErrorView(
+                                    message: "Couldn’t refresh location.",
+                                    error: error,
+                                    retry: locationDataManager.refresh
+                                )
                             }
                         }
+                    }
                 case .notDetermined:
                     ScrollView {
                         VStack(spacing: 8) {
@@ -52,12 +53,35 @@ struct ContentView: View {
                 case .waiting:
                     ProgressView()
                 case .restricted:
-                    Text("Location information is restricted, please check with your device adminstrator.")
+                    ScrollView {
+                        Text("Location information is restricted, please check with your device administrator.")
+                    }
                 case .denied:
-                    Text("Location access was not granted, please check your device settings.")
+                    ScrollView {
+                        VStack {
+                            Text("Location access was not granted. Enable it in Settings, then try again.")
+                            Button("Try Again", systemImage: "arrow.clockwise") {
+                                locationDataManager.refresh()
+                            }
+                        }
+                    }
                 case .error(let error):
-                    Text("Encountered an error getting location information.")
-                    Text(error.localizedDescription)
+                    ScrollView {
+                        VStack {
+                            WeatherErrorView(error: error)
+                            Button("Retry", systemImage: "arrow.clockwise") {
+                                locationDataManager.refresh()
+                            }
+                        }
+                    }
+                }
+            }
+            // Refresh the preview date and location even when the previous
+            // attempt failed, so reopening the app can recover.
+            .onChange(of: scenePhase) {
+                if scenePhase == .active {
+                    locationDataManager.refreshIfNeeded()
+                    now = Date()
                 }
             }
             .navigationTitle {
@@ -66,6 +90,24 @@ struct ContentView: View {
         }
     }
 
+}
+
+private struct RefreshErrorView: View {
+    let message: String
+    let error: Error
+    let retry: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(message)
+                .foregroundStyle(.yellow)
+            Text(error.localizedDescription)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Button("Retry", systemImage: "arrow.clockwise", action: retry)
+        }
+        .padding(.top, 8)
+    }
 }
 
 #Preview {

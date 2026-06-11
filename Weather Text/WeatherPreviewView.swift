@@ -7,10 +7,11 @@ struct WeatherPreviewView: View {
 
     enum WeatherState {
       case loading
-      case loaded(WeatherData)
+      case loaded(WeatherData, date: Date, refreshError: Error?)
       case failed(Error)
     }
     @State private var state = WeatherState.loading
+    @State private var retryID = 0
     @ObservedObject var prefs = Prefs.shared
 
     var body: some View {
@@ -24,13 +25,19 @@ struct WeatherPreviewView: View {
                 case .loading:
                     ProgressView()
                         .padding(.vertical, 12)
-                case .loaded(let weather):
+                case .loaded(let weather, let date, _):
                         WeatherView(weather: weather)
                         if Prefs.shared.showFooter {
-                            WeatherFooterView(date: now, locationName: weather.locationName)
+                            WeatherFooterView(date: date, locationName: weather.locationName)
                         }
                 case .failed(let error):
-                    WeatherErrorView(error: error)
+                    VStack(alignment: .leading) {
+                        WeatherErrorView(error: error)
+                        Button("Retry", systemImage: "arrow.clockwise") {
+                            retryID += 1
+                        }
+                        .buttonStyle(BorderedButtonStyle())
+                    }
                 }
             }
                 .padding(8)
@@ -42,7 +49,7 @@ struct WeatherPreviewView: View {
                 .foregroundStyle(.secondary)
                 .padding(.top, 8)
             Toggle("Show footer", isOn: $prefs.showFooter)
-            if case let .loaded(weather) = state {
+            if case let .loaded(weather, _, refreshError) = state {
                 if let alert = weather.alert {
                     Button("Dismiss Alert") {
                         Prefs.shared.ignore(alert: alert)
@@ -50,15 +57,54 @@ struct WeatherPreviewView: View {
                     .padding(.top, 8)
                     .buttonStyle(BorderedButtonStyle())
                 }
+                if let refreshError {
+                    VStack(alignment: .leading) {
+                        Text("Couldn’t refresh weather. Showing the last update.")
+                            .foregroundStyle(.yellow)
+                        Text(refreshError.localizedDescription)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Button("Retry", systemImage: "arrow.clockwise") {
+                            retryID += 1
+                        }
+                        .buttonStyle(BorderedButtonStyle())
+                    }
+                    .padding(.top, 8)
+                }
             }
         }
-        .task(id: now) {
+        .task(id: LoadID(location: location, now: now, retryID: retryID)) {
+            let loadDate = Date.now
             do {
-                let weatherData = try await WeatherData.load(location: location, now: now)
-                state = .loaded(weatherData)
+                let weatherData = try await WeatherData.load(location: location, now: loadDate)
+                try Task.checkCancellation()
+                state = .loaded(weatherData, date: loadDate, refreshError: nil)
+            } catch is CancellationError {
+                return
             } catch {
-                state = .failed(error)
+                guard !Task.isCancelled else {
+                    return
+                }
+                if case let .loaded(weather, date, _) = state {
+                    state = .loaded(weather, date: date, refreshError: error)
+                } else {
+                    state = .failed(error)
+                }
             }
+        }
+    }
+
+    private struct LoadID: Hashable {
+        let latitude: CLLocationDegrees
+        let longitude: CLLocationDegrees
+        let now: Date
+        let retryID: Int
+
+        init(location: CLLocation, now: Date, retryID: Int) {
+            latitude = location.coordinate.latitude
+            longitude = location.coordinate.longitude
+            self.now = now
+            self.retryID = retryID
         }
     }
 }

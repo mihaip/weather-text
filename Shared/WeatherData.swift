@@ -3,8 +3,7 @@ import Foundation
 import SwiftUI
 import WeatherKit
 
-struct WeatherData {
-    let location: CLLocation
+struct WeatherData: Codable {
     let locationName: String?
     let currentTemperature: Measurement<UnitTemperature>
     let currentSymbol: String
@@ -18,7 +17,9 @@ struct WeatherData {
 
     static func load(location: CLLocation, now: Date) async throws -> WeatherData {
         let (current, daily, alerts) = try await WeatherService.shared.weather(for: location, including: .current, .daily, .alerts)
-        let today = daily[0]
+        guard let today = daily.first else {
+            throw WeatherDataError.missingDailyForecast
+        }
 
         var sunEvent : SunEvent?
         for day in daily {
@@ -74,7 +75,6 @@ struct WeatherData {
         }
 
         return WeatherData(
-            location: location,
             locationName: locationName,
             currentTemperature: current.temperature,
             currentSymbol: current.symbolName,
@@ -88,7 +88,7 @@ struct WeatherData {
     }
 }
 
-struct WeatherAlertData {
+struct WeatherAlertData: Codable {
     let detailsURL: URL?
     let severity: WeatherAlertSeverity
     let source: String
@@ -106,7 +106,7 @@ struct WeatherAlertData {
     }
 }
 
-enum WeatherAlertSeverity {
+enum WeatherAlertSeverity: Codable {
     case severe
     case extreme
     case unknown
@@ -134,13 +134,12 @@ enum WeatherAlertSeverity {
     }
 }
 
-enum SunEvent {
+enum SunEvent: Codable {
     case sunrise(Date)
     case sunset(Date)
 }
 
 let goodWeatherData = WeatherData(
-    location: previewLocation,
     locationName: previewLocationName,
     currentTemperature: Measurement(value: 62.9, unit: UnitTemperature.fahrenheit),
     currentSymbol: "cloud.sun",
@@ -152,7 +151,6 @@ let goodWeatherData = WeatherData(
 )
 
 let mediumWeatherData = WeatherData(
-    location: previewLocation,
     locationName: previewLocationName,
     currentTemperature: Measurement(value: 52.9, unit: UnitTemperature.fahrenheit),
     currentSymbol: "cloud.sun",
@@ -164,7 +162,6 @@ let mediumWeatherData = WeatherData(
 )
 
 let badWeatherData = WeatherData(
-    location: previewLocation,
     locationName: previewLocationName,
     currentTemperature: Measurement(value: 20.7, unit: UnitTemperature.fahrenheit),
     currentSymbol: "wind.snow",
@@ -177,3 +174,11 @@ let badWeatherData = WeatherData(
 
 let previewLocation = CLLocation(latitude: 37.3230, longitude: 122.0322)
 let previewLocationName = "Cupertino, CA"
+
+enum WeatherDataError: LocalizedError {
+    case missingDailyForecast
+
+    var errorDescription: String? {
+        "No daily forecast was returned."
+    }
+}
