@@ -15,17 +15,23 @@ class Prefs: ObservableObject {
     }
     private static let showFooterKey = "showFooter"
 
-    @suiteUserDefault(Prefs.ignoredAlertKey, defaultValue: nil) var ignoredAlertURL: String? {
+    @suiteUserDefault(Prefs.ignoredAlertsKey, defaultValue: [:]) var ignoredAlerts: [String: Double] {
         willSet { objectWillChange.send() }
     }
-    private static let ignoredAlertKey = "ignoredAlert"
+    private static let ignoredAlertsKey = "ignoredAlerts"
+    private static let ignoredAlertLifetime: TimeInterval = 24 * 60 * 60
 
-    func shouldShow(alert: WeatherAlertData) -> Bool {
-        return ignoredAlertURL == nil || alert.detailsURL?.absoluteString != ignoredAlertURL
+    func shouldShow(alert: WeatherAlertData, now: Date = Date()) -> Bool {
+        guard let ignoredAt = ignoredAlerts[alert.dismissalIdentifier] else {
+            return true
+        }
+        return now.timeIntervalSince1970 - ignoredAt >= Prefs.ignoredAlertLifetime
     }
 
-    func ignore(alert: WeatherAlertData) {
-        ignoredAlertURL = alert.detailsURL?.absoluteString
+    func ignore(alert: WeatherAlertData, now: Date = Date()) {
+        let cutoff = now.timeIntervalSince1970 - Prefs.ignoredAlertLifetime
+        ignoredAlerts = ignoredAlerts.filter { $0.value > cutoff }
+            .merging([alert.dismissalIdentifier: now.timeIntervalSince1970]) { _, new in new }
     }
 }
 
@@ -51,4 +57,3 @@ struct suiteUserDefault<T> {
         }
     }
 }
-

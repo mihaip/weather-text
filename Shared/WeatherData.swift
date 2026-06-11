@@ -48,7 +48,7 @@ struct WeatherData {
                 @unknown default:
                     severity = .unknown
                 }
-                alert = WeatherAlertData(detailsURL: a.detailsURL, severity: severity, summary: a.summary)
+                alert = WeatherAlertData(detailsURL: a.detailsURL, severity: severity, source: a.source, summary: a.summary)
             }
         }
 
@@ -91,7 +91,19 @@ struct WeatherData {
 struct WeatherAlertData {
     let detailsURL: URL?
     let severity: WeatherAlertSeverity
+    let source: String
     let summary: String
+
+    // WeatherKit's Swift API does not expose the REST alert ID or alert expiration time.
+    var dismissalIdentifier: String {
+        return [source, summary]
+            .map {
+                $0.split(whereSeparator: \.isWhitespace)
+                    .joined(separator: " ")
+                    .lowercased()
+            }
+            .joined(separator: "|")
+    }
 }
 
 enum WeatherAlertSeverity {
@@ -160,7 +172,7 @@ let badWeatherData = WeatherData(
     highTemperature: Measurement(value: 30.7, unit: UnitTemperature.fahrenheit),
     lowTemperature: Measurement(value: 12.2, unit: UnitTemperature.fahrenheit),
     sunEvent: .sunset(Calendar.current.date(bySetting: .hour, value: 17, of: Date())!),
-    alert: WeatherAlertData(detailsURL: URL(string: "https://galileo.com")!, severity: .extreme, summary: "Thunderbolt and lightning, very very frightening")
+    alert: WeatherAlertData(detailsURL: URL(string: "https://galileo.com")!, severity: .extreme, source: "National Weather Service", summary: "Thunderbolt and lightning, very very frightening")
 )
 
 let previewLocation = CLLocation(latitude: 37.3230, longitude: 122.0322)
