@@ -12,18 +12,12 @@ struct ContentView: View {
             VStack {
                 switch locationDataManager.state {
                 case .available(let location):
-                    ScrollView {
-                        VStack {
-                            WeatherPreviewView(location: location, now: now)
-                            if let error = locationDataManager.refreshError {
-                                RefreshErrorView(
-                                    message: "Couldn’t refresh location.",
-                                    error: error,
-                                    retry: locationDataManager.refresh
-                                )
-                            }
-                        }
-                    }
+                    WeatherPreviewView(
+                        location: location,
+                        now: now,
+                        locationRefreshError: locationDataManager.refreshError,
+                        retryLocation: locationDataManager.refresh
+                    )
                 case .notDetermined:
                     ScrollView {
                         VStack(spacing: 8) {
@@ -90,24 +84,6 @@ struct ContentView: View {
         }
     }
 
-}
-
-private struct RefreshErrorView: View {
-    let message: String
-    let error: Error
-    let retry: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(message)
-                .foregroundStyle(.yellow)
-            Text(error.localizedDescription)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Button("Retry", systemImage: "arrow.clockwise", action: retry)
-        }
-        .padding(.top, 8)
-    }
 }
 
 #Preview {

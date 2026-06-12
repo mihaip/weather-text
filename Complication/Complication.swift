@@ -75,7 +75,12 @@ struct Provider: TimelineProvider {
             case (true, _), (_, .failure(_)):
                 refreshInterval = 300
             }
-            let refreshDate = entry.date.addingTimeInterval(refreshInterval)
+            var refreshDate = entry.date.addingTimeInterval(refreshInterval)
+            if case .success(let weather) = entry.data,
+               let workWeather = weather.workWeather,
+               workWeather.expiresAt > entry.date {
+                refreshDate = min(refreshDate, workWeather.expiresAt)
+            }
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
             completion(timeline)
         }
