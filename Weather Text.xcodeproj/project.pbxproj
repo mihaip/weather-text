@@ -31,6 +31,7 @@
 		91555A7C2C1E438800C8300F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7B2C1E438800C8300F /* Assets.xcassets */; };
 		91555A7F2C1E438800C8300F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7E2C1E438800C8300F /* Preview Assets.xcassets */; };
 		91CB45BD2C1E6577009994FA /* LocationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CB45BC2C1E6577009994FA /* LocationDataManager.swift */; };
+		91C0D0012E00000100DB989B /* WorkWeatherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		91555A7B2C1E438800C8300F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91555A7E2C1E438800C8300F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		91CB45BC2C1E6577009994FA /* LocationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDataManager.swift; sourceTree = "<group>"; };
+		91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkWeatherSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,6 +186,7 @@
 				911754A22C1E5B5F002F2AED /* Watch App.entitlements */,
 				91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */,
 				91CB45BC2C1E6577009994FA /* LocationDataManager.swift */,
+				91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */,
 			);
 			path = "Weather Text";
 			sourceTree = "<group>";
@@ -349,6 +352,7 @@
 				911CA2882C39C4A500DB989B /* WeatherFooterView.swift in Sources */,
 				911CA27A2C37740B00DB989B /* WeatherData.swift in Sources */,
 				91555A782C1E438700C8300F /* WeatherTextWatchApp.swift in Sources */,
+				91C0D0012E00000100DB989B /* WorkWeatherSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

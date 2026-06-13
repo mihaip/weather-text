@@ -40,6 +40,20 @@ struct WeatherView : View {
                 }
                 .font(.callout)
                 .foregroundStyle(alert.severity.color)
+            } else if let workWeather = weather.workWeather, workWeather.expiresAt > Date.now {
+                HStack(spacing: mediumSpacing) {
+                    Text("Work")
+                        .foregroundStyle(.secondary)
+                    if workWeather.symbol != weather.currentSymbol {
+                        Image(systemName: workWeather.symbol)
+                    }
+                    Text("High ")
+                        + Text(workWeather.highTemperature, format: temperatureFormat)
+                    workWeather.differenceSummary
+                }
+                .font(.callout)
+                .scaledToFill()
+                .minimumScaleFactor(0.75)
             } else if let sunEvent = weather.sunEvent {
                 HStack(spacing: 0) {
                     switch sunEvent {
@@ -63,5 +77,21 @@ struct WeatherView : View {
             maxHeight: .infinity,
             alignment: .topLeading
         )
+    }
+}
+
+extension WorkWeatherInsight {
+    var differenceSummary: Text {
+        switch reason {
+        case .precipitation(let kind, let chance):
+            return Text("\(kind) \(chance, format: .percent.precision(.fractionLength(0)))")
+                .foregroundStyle(Color.blue.opacity(0.65))
+        case .lowerHigh(let degrees):
+            return Text("\(degrees, format: .number.precision(.fractionLength(0)))° cooler")
+                .foregroundStyle(Color.blue.opacity(0.65))
+        case .higherHigh(let degrees):
+            return Text("\(degrees, format: .number.precision(.fractionLength(0)))° hotter")
+                .foregroundStyle(Color.orange.opacity(0.65))
+        }
     }
 }

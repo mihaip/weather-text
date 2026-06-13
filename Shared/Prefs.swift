@@ -1,6 +1,19 @@
 import Foundation
 import WidgetKit
 
+struct SavedLocation: Codable, Hashable {
+    let name: String
+    let latitude: Double
+    let longitude: Double
+}
+
+struct WorkWeatherSettings: Codable, Hashable {
+    var isEnabled = false
+    var location: SavedLocation?
+    var workDays: Set<Int> = [2, 3, 4, 5, 6]
+    var cutoffMinutes = 10 * 60
+}
+
 class Prefs: ObservableObject {
     static let shared: Prefs = {
         let instance = Prefs()
@@ -14,6 +27,25 @@ class Prefs: ObservableObject {
         willSet { objectWillChange.send() }
     }
     private static let showFooterKey = "showFooter"
+
+    var workWeatherSettings: WorkWeatherSettings {
+        get {
+            guard let data = suite?.data(forKey: Prefs.workWeatherSettingsKey),
+                  let settings = try? JSONDecoder().decode(WorkWeatherSettings.self, from: data) else {
+                return WorkWeatherSettings()
+            }
+            return settings
+        }
+        set {
+            guard let data = try? JSONEncoder().encode(newValue) else {
+                return
+            }
+            objectWillChange.send()
+            suite?.set(data, forKey: Prefs.workWeatherSettingsKey)
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
+    private static let workWeatherSettingsKey = "workWeatherSettings"
 
     @suiteUserDefault(Prefs.ignoredAlertsKey, defaultValue: [:]) var ignoredAlerts: [String: Double] {
         willSet { objectWillChange.send() }
