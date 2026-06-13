@@ -81,23 +81,6 @@ struct WeatherView : View {
 }
 
 extension WorkWeatherInsight {
-    func summary(
-        format temperatureFormat: Measurement<UnitTemperature>.FormatStyle,
-        prefix: String = "Work: "
-    ) -> Text {
-        var text = Text(prefix) + Text("High ") + Text(highTemperature, format: temperatureFormat)
-        switch reason {
-        case .precipitation(let kind, let chance):
-            text = Text("\(prefix)\(kind) \(chance, format: .percent.precision(.fractionLength(0))) · High ")
-                + Text(highTemperature, format: temperatureFormat)
-        case .lowerHigh(let degrees):
-            text = text + Text(" · \(degrees, format: .number.precision(.fractionLength(0)))° lower")
-        case .higherHigh(let degrees):
-            text = text + Text(" · \(degrees, format: .number.precision(.fractionLength(0)))° higher")
-        }
-        return text
-    }
-
     var differenceSummary: Text {
         switch reason {
         case .precipitation(let kind, let chance):
