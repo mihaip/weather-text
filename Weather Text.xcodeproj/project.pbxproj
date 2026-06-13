@@ -11,6 +11,7 @@
 		911754932C1E54A7002F2AED /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 911754922C1E54A7002F2AED /* SwiftUI.framework */; };
 		911754962C1E54A7002F2AED /* Complication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911754952C1E54A7002F2AED /* Complication.swift */; };
 		911754982C1E54A8002F2AED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 911754972C1E54A8002F2AED /* Assets.xcassets */; };
+		911754B02E000010002F2AED /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 911754B12E000010002F2AED /* PrivacyInfo.xcprivacy */; };
 		9117549C2C1E54A8002F2AED /* ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9117548E2C1E54A7002F2AED /* ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		911CA27A2C37740B00DB989B /* WeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911CA2792C37740B00DB989B /* WeatherData.swift */; };
 		911CA27B2C37740B00DB989B /* WeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911CA2792C37740B00DB989B /* WeatherData.swift */; };
@@ -30,6 +31,8 @@
 		91555A7A2C1E438700C8300F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91555A792C1E438700C8300F /* ContentView.swift */; };
 		91555A7C2C1E438800C8300F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7B2C1E438800C8300F /* Assets.xcassets */; };
 		91555A7F2C1E438800C8300F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91555A7E2C1E438800C8300F /* Preview Assets.xcassets */; };
+		91555A902E00001000C8300F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 91555A912E00001000C8300F /* PrivacyInfo.xcprivacy */; };
+		91555A922E00002000C8300F /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91555A932E00002000C8300F /* AboutView.swift */; };
 		91CB45BD2C1E6577009994FA /* LocationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CB45BC2C1E6577009994FA /* LocationDataManager.swift */; };
 		91C0D0012E00000100DB989B /* WorkWeatherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -84,6 +87,7 @@
 		911754972C1E54A8002F2AED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		911754992C1E54A8002F2AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		911754A12C1E5967002F2AED /* ComplicationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ComplicationExtension.entitlements; sourceTree = "<group>"; };
+		911754B12E000010002F2AED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		911754A22C1E5B5F002F2AED /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Watch App.entitlements"; sourceTree = "<group>"; };
 		911CA2792C37740B00DB989B /* WeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherData.swift; sourceTree = "<group>"; };
 		911CA27C2C37744D00DB989B /* LocationFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFetcher.swift; sourceTree = "<group>"; };
@@ -98,6 +102,8 @@
 		91555A792C1E438700C8300F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		91555A7B2C1E438800C8300F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91555A7E2C1E438800C8300F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		91555A912E00001000C8300F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		91555A932E00002000C8300F /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		91CB45BC2C1E6577009994FA /* LocationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDataManager.swift; sourceTree = "<group>"; };
 		91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkWeatherSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -138,6 +144,7 @@
 				911754952C1E54A7002F2AED /* Complication.swift */,
 				911754A12C1E5967002F2AED /* ComplicationExtension.entitlements */,
 				911754992C1E54A8002F2AED /* Info.plist */,
+				911754B12E000010002F2AED /* PrivacyInfo.xcprivacy */,
 			);
 			path = Complication;
 			sourceTree = "<group>";
@@ -187,6 +194,8 @@
 				91555A772C1E438700C8300F /* WeatherTextWatchApp.swift */,
 				91CB45BC2C1E6577009994FA /* LocationDataManager.swift */,
 				91C0D0002E00000100DB989B /* WorkWeatherSettingsView.swift */,
+				91555A932E00002000C8300F /* AboutView.swift */,
+				91555A912E00001000C8300F /* PrivacyInfo.xcprivacy */,
 			);
 			path = "Weather Text";
 			sourceTree = "<group>";
@@ -302,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				911754982C1E54A8002F2AED /* Assets.xcassets in Resources */,
+				911754B02E000010002F2AED /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,6 +328,7 @@
 			files = (
 				91555A7F2C1E438800C8300F /* Preview Assets.xcassets in Resources */,
 				91555A7C2C1E438800C8300F /* Assets.xcassets in Resources */,
+				91555A902E00001000C8300F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +364,7 @@
 				911CA27A2C37740B00DB989B /* WeatherData.swift in Sources */,
 				91555A782C1E438700C8300F /* WeatherTextWatchApp.swift in Sources */,
 				91C0D0012E00000100DB989B /* WorkWeatherSettingsView.swift in Sources */,
+				91555A922E00002000C8300F /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

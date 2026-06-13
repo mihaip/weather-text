@@ -96,6 +96,14 @@ struct WeatherPreviewView: View {
                 }
             }
 
+            Section {
+                NavigationLink {
+                    AboutView()
+                } label: {
+                    Label("About", systemImage: "info.circle")
+                }
+            }
+
             if case let .loaded(_, _, refreshError) = state, let refreshError {
                 Section("Weather Refresh") {
                     Text("Couldn’t refresh weather. Showing the last update.")
