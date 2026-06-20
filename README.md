@@ -7,10 +7,12 @@ Weather Text is a watchOS app that displays a textual summary of the day's weath
 
 ## Installation
 
-Weather Text is [available via TestFlight](https://testflight.apple.com/join/VOrTFGeM). It requires watchOS 10.0 or later. Installation happens on your iPhone, but the installed app is visible on a paired Apple Watch.
+Weather Text is available [via the App Store](https://apps.apple.com/app/weather-text/id6532596655). It requires watchOS 10.0 or later.
 
-It is not available on the App Store because it uses the WeatherKit API, which has a limited number of free requests per day.
+Development builds are also  [available via TestFlight](https://testflight.apple.com/join/VOrTFGeM). TestFlight  installation happens on your iPhone, but the installed app is visible on a paired Apple Watch.
 
 ## Usage
 
 The widget will update hourly and display the current location's conditions, highs and lows of the day, and the next sunset or sunrise time. An optional footer can be shown with the location name and update time (most useful when debugging).
+
+You can also specify a "work location" in the app, which optionally shows the weather for that location on workday mornings, if it has materially different conditions than your current location.
