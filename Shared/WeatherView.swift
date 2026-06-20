@@ -5,12 +5,6 @@ struct WeatherView : View {
     @ScaledMetric private var mediumSpacing = 6
     @ScaledMetric private var smallSpacing = 2
 
-    private let temperatureFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
-        width: .narrow,
-        hidesScaleName: true,
-        numberFormatStyle: FloatingPointFormatStyle<Double>().precision(.fractionLength(0))
-    )
-
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: mediumSpacing) {
@@ -49,7 +43,7 @@ struct WeatherView : View {
                     }
                     Text("High ")
                         + Text(workWeather.highTemperature, format: temperatureFormat)
-                    workWeather.differenceSummary
+                    workWeather.differenceSummary(currentDailyHigh: weather.highTemperature)
                 }
                 .font(.callout)
                 .scaledToFill()
@@ -81,17 +75,43 @@ struct WeatherView : View {
 }
 
 extension WorkWeatherInsight {
-    var differenceSummary: Text {
+    func differenceSummary(currentDailyHigh: Measurement<UnitTemperature>) -> Text {
         switch reason {
         case .precipitation(let kind, let chance):
             return Text("\(kind) \(chance, format: .percent.precision(.fractionLength(0)))")
                 .foregroundStyle(Color.blue.opacity(0.65))
-        case .lowerHigh(let degrees):
-            return Text("\(degrees, format: .number.precision(.fractionLength(0)))° cooler")
+        case .lowerHigh:
+            return (formatHighDifference(from: currentDailyHigh) + Text(" cooler"))
                 .foregroundStyle(Color.blue.opacity(0.65))
-        case .higherHigh(let degrees):
-            return Text("\(degrees, format: .number.precision(.fractionLength(0)))° hotter")
+        case .higherHigh:
+            return (formatHighDifference(from: currentDailyHigh) + Text(" hotter"))
                 .foregroundStyle(Color.orange.opacity(0.65))
         }
     }
+
+    func formatHighDifference(from currentDailyHigh: Measurement<UnitTemperature>) -> Text {
+        let displayUnit = UnitTemperature(forLocale: .autoupdatingCurrent)
+
+        // Round before subtracting so that the displayed value is consistent
+        // with subtracting the rounded display of the current and work high.
+        let workHigh = highTemperature.converted(to: displayUnit).value.rounded(.toNearestOrEven)
+        let currentHigh = currentDailyHigh.converted(to: displayUnit).value.rounded(.toNearestOrEven)
+
+        return Text(
+            Measurement(value: abs(workHigh - currentHigh), unit: displayUnit),
+            format: WorkWeatherInsight.temperatureDifferenceFormat)
+    }
+
+    private static let temperatureDifferenceFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
+        width: .narrow,
+        usage: .asProvided,
+        hidesScaleName: true,
+        numberFormatStyle: FloatingPointFormatStyle<Double>().precision(.fractionLength(0))
+    )
 }
+
+private let temperatureFormat: Measurement<UnitTemperature>.FormatStyle = .measurement(
+    width: .narrow,
+    hidesScaleName: true,
+    numberFormatStyle: FloatingPointFormatStyle<Double>().precision(.fractionLength(0))
+)

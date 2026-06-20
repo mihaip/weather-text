@@ -221,7 +221,7 @@ struct WorkWeatherInsight: Codable {
         }
 
         let reason: WorkWeatherReason?
-        let highDifference = workDay.highTemperature.converted(to: .fahrenheit).value
+        let highDifferenceFahrenheit = workDay.highTemperature.converted(to: .fahrenheit).value
             - currentDailyHigh.converted(to: .fahrenheit).value
 
         if workDay.precipitation != .none && workDay.precipitationChance >= 0.3 {
@@ -229,10 +229,10 @@ struct WorkWeatherInsight: Codable {
                 kind: workDay.precipitation.description.lowercased(),
                 chance: workDay.precipitationChance
             )
-        } else if highDifference <= -10 {
-            reason = .lowerHigh(degrees: abs(highDifference))
-        } else if highDifference >= 10 {
-            reason = .higherHigh(degrees: highDifference)
+        } else if highDifferenceFahrenheit <= -10 {
+            reason = .lowerHigh
+        } else if highDifferenceFahrenheit >= 10 {
+            reason = .higherHigh
         } else {
             reason = nil
         }
@@ -252,6 +252,7 @@ struct WorkWeatherInsight: Codable {
 struct WorkWeatherDiagnostic {
     let currentSymbol: String
     let currentTemperature: Measurement<UnitTemperature>
+    let currentDailyHigh: Measurement<UnitTemperature>
     let currentCondition: WeatherCondition
     let insight: WorkWeatherInsight?
     let visibility: WorkWeatherVisibility
@@ -289,6 +290,7 @@ struct WorkWeatherDiagnostic {
         return WorkWeatherDiagnostic(
             currentSymbol: workCurrent.symbolName,
             currentTemperature: workCurrent.temperature,
+            currentDailyHigh: currentDay.highTemperature,
             currentCondition: workCurrent.condition,
             insight: WorkWeatherInsight.make(
                 request: request,
@@ -302,8 +304,8 @@ struct WorkWeatherDiagnostic {
 
 enum WorkWeatherReason: Codable {
     case precipitation(kind: String, chance: Double)
-    case lowerHigh(degrees: Double)
-    case higherHigh(degrees: Double)
+    case lowerHigh
+    case higherHigh
 }
 
 struct WeatherAlertData: Codable {
@@ -368,8 +370,8 @@ let goodWeatherData = WeatherData(
     alert: nil,
     workWeather: WorkWeatherInsight(
         symbol: "cloud.fill",
-        highTemperature: Measurement(value: 63, unit: UnitTemperature.fahrenheit),
-        reason: .lowerHigh(degrees: 15),
+        highTemperature: Measurement(value: 63.2, unit: UnitTemperature.fahrenheit),
+        reason: .lowerHigh,
         expiresAt: Date().addingTimeInterval(3600)
     )
 )

@@ -136,17 +136,17 @@ private enum WorkWeatherDiagnosticState {
 private extension WorkWeatherInsight {
     func summary(
         format temperatureFormat: Measurement<UnitTemperature>.FormatStyle,
-        prefix: String = "Work: "
+        currentDailyHigh: Measurement<UnitTemperature>
     ) -> Text {
-        var text = Text(prefix) + Text("High ") + Text(highTemperature, format: temperatureFormat)
+        var text = Text("High ") + Text(highTemperature, format: temperatureFormat)
         switch reason {
         case .precipitation(let kind, let chance):
-            text = Text("\(prefix)\(kind) \(chance, format: .percent.precision(.fractionLength(0))) · High ")
+            text = Text("\(kind) \(chance, format: .percent.precision(.fractionLength(0))) · High ")
                 + Text(highTemperature, format: temperatureFormat)
-        case .lowerHigh(let degrees):
-            text = text + Text(" · \(degrees, format: .number.precision(.fractionLength(0)))° lower")
-        case .higherHigh(let degrees):
-            text = text + Text(" · \(degrees, format: .number.precision(.fractionLength(0)))° higher")
+        case .lowerHigh:
+            text = text + Text(" · ") + formatHighDifference(from: currentDailyHigh) + Text(" lower")
+        case .higherHigh:
+            text = text + Text(" · ") + formatHighDifference(from: currentDailyHigh) + Text(" higher")
         }
         return text
     }
@@ -177,7 +177,7 @@ private struct WorkWeatherDiagnosticView: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                         Text("Different enough today: ")
-                            + insight.summary(format: temperatureFormat, prefix: "")
+                        + insight.summary(format: temperatureFormat, currentDailyHigh: diagnostic.currentDailyHigh)
                     }
                     .foregroundStyle(.green)
                 } else {
