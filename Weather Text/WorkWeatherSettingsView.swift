@@ -12,6 +12,46 @@ struct WorkWeatherSettingsView: View {
     }
 
     var body: some View {
+        WorkWeatherSettingsForm(
+            currentLocation: currentLocation,
+            settings: Binding(
+                get: { prefs.workWeatherSettings },
+                set: { prefs.workWeatherSettings = $0 }
+            ),
+            diagnosticState: diagnosticState
+        )
+        .navigationTitle("Work Weather")
+        .task(id: WorkWeatherDiagnosticID(
+            location: currentLocation,
+            settings: settings
+        )) {
+            diagnosticState = .loading
+            do {
+                let diagnostic = try await WorkWeatherDiagnostic.load(
+                    currentLocation: currentLocation,
+                    settings: settings,
+                    now: Date.now
+                )
+                try Task.checkCancellation()
+                diagnosticState = diagnostic.map(WorkWeatherDiagnosticState.loaded) ?? .unavailable
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else {
+                    return
+                }
+                diagnosticState = .failed(error)
+            }
+        }
+    }
+}
+
+private struct WorkWeatherSettingsForm: View {
+    let currentLocation: CLLocation
+    @Binding var settings: WorkWeatherSettings
+    let diagnosticState: WorkWeatherDiagnosticState
+
+    var body: some View {
         Form {
             Section {
                 Text("Show important weather differences at your work location on workday mornings.")
@@ -51,29 +91,6 @@ struct WorkWeatherSettingsView: View {
                 .labelsHidden()
             }
         }
-        .navigationTitle("Work Weather")
-        .task(id: WorkWeatherDiagnosticID(
-            location: currentLocation,
-            settings: settings
-        )) {
-            diagnosticState = .loading
-            do {
-                let diagnostic = try await WorkWeatherDiagnostic.load(
-                    currentLocation: currentLocation,
-                    settings: settings,
-                    now: Date.now
-                )
-                try Task.checkCancellation()
-                diagnosticState = diagnostic.map(WorkWeatherDiagnosticState.loaded) ?? .unavailable
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled else {
-                    return
-                }
-                diagnosticState = .failed(error)
-            }
-        }
     }
 
     private func binding<T>(_ keyPath: WritableKeyPath<WorkWeatherSettings, T>) -> Binding<T> {
@@ -82,7 +99,7 @@ struct WorkWeatherSettingsView: View {
             set: { value in
                 var updated = settings
                 updated[keyPath: keyPath] = value
-                prefs.workWeatherSettings = updated
+                settings = updated
             }
         )
     }
@@ -97,7 +114,7 @@ struct WorkWeatherSettingsView: View {
                 } else {
                     updated.workDays.remove(weekday)
                 }
-                prefs.workWeatherSettings = updated
+                settings = updated
             }
         )
     }
@@ -120,7 +137,7 @@ struct WorkWeatherSettingsView: View {
                 }
                 var updated = settings
                 updated[keyPath: keyPath] = hour * 60 + minute
-                prefs.workWeatherSettings = updated
+                settings = updated
             }
         )
     }
@@ -174,14 +191,18 @@ private struct WorkWeatherDiagnosticView: View {
                 }
                 .font(.callout)
                 if let insight = diagnostic.insight {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
+                    DiagnosticStatusRow(symbol: "checkmark.circle.fill") {
                         Text("Different enough today: ")
-                        + insight.summary(format: temperatureFormat, currentDailyHigh: diagnostic.currentDailyHigh)
+                            + insight.summary(
+                                format: temperatureFormat,
+                                currentDailyHigh: diagnostic.currentDailyHigh
+                            )
                     }
                     .foregroundStyle(.green)
                 } else {
-                    Label("Not different enough today", systemImage: "minus.circle")
+                    DiagnosticStatusRow(symbol: "minus.circle") {
+                        Text("Not different enough today")
+                    }
                         .foregroundStyle(.secondary)
                 }
                 visibilityStatus(diagnostic.visibility)
@@ -199,24 +220,50 @@ private struct WorkWeatherDiagnosticView: View {
     private func visibilityStatus(_ visibility: WorkWeatherVisibility) -> some View {
         switch visibility {
         case .visible:
-            Label("Currently eligible to show", systemImage: "eye")
+            DiagnosticStatusRow(symbol: "eye") {
+                Text("Currently eligible to show")
+            }
                 .foregroundStyle(.secondary)
         case .disabled:
-            Label("Not currently eligible: turned off", systemImage: "eye.slash")
+            DiagnosticStatusRow(symbol: "eye.slash") {
+                Text("Not currently eligible: turned off")
+            }
                 .foregroundStyle(.secondary)
         case .notWorkDay:
-            Label("Not currently eligible: not a work day", systemImage: "eye.slash")
+            DiagnosticStatusRow(symbol: "eye.slash") {
+                Text("Not currently eligible: not a work day")
+            }
                 .foregroundStyle(.secondary)
         case .pastCutoff(let cutoff):
-            HStack {
-                Image(systemName: "eye.slash")
+            DiagnosticStatusRow(symbol: "eye.slash") {
                 Text("Not currently eligible: past ")
                     + Text(cutoff, style: .time)
             }
             .foregroundStyle(.secondary)
         case .nearWork:
-            Label("Not currently eligible: near work", systemImage: "eye.slash")
+            DiagnosticStatusRow(symbol: "eye.slash") {
+                Text("Not currently eligible: near work")
+            }
                 .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct DiagnosticStatusRow<Content: View>: View {
+    let symbol: String
+    let content: Content
+
+    init(symbol: String, @ViewBuilder content: () -> Content) {
+        self.symbol = symbol
+        self.content = content()
+    }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Image(systemName: symbol)
+                .imageScale(.medium)
+                .frame(width: 18, alignment: .center)
+            content
         }
     }
 }
@@ -394,4 +441,43 @@ private func locationName(for location: CLLocation) async throws -> String {
         return city
     }
     return "Work"
+}
+
+#Preview {
+    @Previewable @State var settings = WorkWeatherSettings(
+        isEnabled: true,
+        location: SavedLocation(
+            name: "San Francisco, CA",
+            latitude: 37.7749,
+            longitude: -122.4194
+        ),
+        workDays: [2, 3, 4, 5, 6],
+        cutoffMinutes: 10 * 60
+    )
+
+    NavigationStack {
+        WorkWeatherSettingsForm(
+            currentLocation: previewLocation,
+            settings: $settings,
+            diagnosticState: .loaded(WorkWeatherDiagnostic(
+                currentSymbol: "cloud.sun",
+                currentTemperature: Measurement(value: 70, unit: UnitTemperature.fahrenheit),
+                currentDailyHigh: Measurement(value: 84, unit: UnitTemperature.fahrenheit),
+                currentCondition: .partlyCloudy,
+                insight: WorkWeatherInsight(
+                    symbol: "cloud.fill",
+                    highTemperature: Measurement(value: 70, unit: UnitTemperature.fahrenheit),
+                    reason: .lowerHigh,
+                    expiresAt: Calendar.current.date(
+                        bySettingHour: 10,
+                        minute: 0,
+                        second: 0,
+                        of: Date()
+                    )!
+                ),
+                visibility: .notWorkDay
+            ))
+        )
+        .navigationTitle("Work Weather")
+    }
 }
