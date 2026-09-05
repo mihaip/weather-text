@@ -14,6 +14,8 @@ struct WeatherPreviewView: View {
     }
     @State private var state = WeatherState.loading
     @State private var retryID = 0
+    @State private var recentlyDismissedAlertID: String?
+    @State private var dismissalFeedbackTrigger = 0
     @ObservedObject var prefs = Prefs.shared
 
     var body: some View {
@@ -90,8 +92,18 @@ struct WeatherPreviewView: View {
                     }
                 }
                 if case let .loaded(weather, _, _) = state, let alert = weather.alert {
-                    Button("Dismiss Alert") {
-                        Prefs.shared.ignore(alert: alert)
+                    if prefs.shouldShow(alert: alert) {
+                        Button("Dismiss Alert") {
+                            withAnimation {
+                                prefs.ignore(alert: alert)
+                                recentlyDismissedAlertID = alert.dismissalIdentifier
+                            }
+                            dismissalFeedbackTrigger += 1
+                        }
+                    } else if recentlyDismissedAlertID == alert.dismissalIdentifier {
+                        Label("Alert dismissed", systemImage: "checkmark")
+                            .foregroundStyle(.secondary)
+                            .transition(.opacity)
                     }
                 }
             }
@@ -128,6 +140,19 @@ struct WeatherPreviewView: View {
                         retryLocation()
                     }
                 }
+            }
+        }
+        .sensoryFeedback(.success, trigger: dismissalFeedbackTrigger)
+        .task(id: recentlyDismissedAlertID) {
+            guard let alertID = recentlyDismissedAlertID else {
+                return
+            }
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled, recentlyDismissedAlertID == alertID else {
+                return
+            }
+            withAnimation {
+                recentlyDismissedAlertID = nil
             }
         }
         .task(id: LoadID(
