@@ -19,21 +19,10 @@ class LocationFetcher : NSObject, CLLocationManagerDelegate {
         guard completions.count == 1 else {
             return
         }
-        switch locationManager.authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            if let location = freshCachedLocation {
-                finish(.success(location))
-            } else {
-                locationManager.requestLocation()
-            }
-        case .restricted:
-            finish(.failure(LocationFetcherError.restricted))
-        case .denied:
-            finish(.failure(LocationFetcherError.denied))
-        case .notDetermined:
-            locationManager.requestAlwaysAuthorization()
-        @unknown default:
-            finish(.failure(LocationFetcherError.unknownAuthorizationStatus(locationManager.authorizationStatus)))
+        if let location = freshCachedLocation {
+            finish(.success(location))
+        } else {
+            locationManager.requestLocation()
         }
     }
 
